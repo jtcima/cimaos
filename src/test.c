@@ -41,7 +41,7 @@ int main()
 /*
     changeptr(ptr);
     printf("%s", array);*/
-
+/*
     int a = 1;
     char b[] = "dfsdssddfd";
     char* p = "hello";
@@ -49,7 +49,8 @@ int main()
     char ptr[20];
     func(ptr, p);
     printf("%s", p1);
-    
+ */
+    char b[6];
     
 
     
