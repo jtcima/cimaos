@@ -19,6 +19,22 @@ char* func(char* dest, const char* src)
     return *res;
 }
 
+
+
+int print_func()
+{
+    
+    return 1;
+}
+
+void print_print(int a)
+{
+    if(a)
+    {
+        printf("worked\n");
+    }
+}
+
 int main()
 {
 /*
@@ -50,6 +66,8 @@ int main()
     func(ptr, p);
     printf("%s", p1);
  */
+    print_print(print_func());
+    
     char b[6];
     
 
