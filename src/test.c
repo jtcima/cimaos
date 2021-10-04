@@ -21,10 +21,10 @@ char* func(char* dest, const char* src)
 
 
 
-int print_func()
+int print_func(int a, int b)
 {
-    
-    return 1;
+   
+    return a+b;
 }
 
 void print_print(int a)
@@ -66,7 +66,7 @@ int main()
     func(ptr, p);
     printf("%s", p1);
  */
-    print_print(print_func());
+    print_print(print_func(56, 78));
     
     char b[6];
     

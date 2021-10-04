@@ -1,8 +1,8 @@
 ORG 0x7c00
 [BITS 16]
 
-CODE_SEG equ gdt_code - gdt_start
-DATA_SEG equ gdt_data - gdt_start
+CODE_SEL equ gdt_code - gdt_start
+DATA_SEL equ gdt_data - gdt_start
 
 jmp short start
 nop
@@ -50,7 +50,7 @@ step2:
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    jmp CODE_SEG:load32
+    jmp CODE_SEL:load32
   
 
 
@@ -88,7 +88,7 @@ load32:
     mov ecx, 100 ;no. of sectors
     mov edi, 0x0100000 ;the address in ram to load into
     call ata_lba_read
-    jmp CODE_SEG:0x0100000
+    jmp CODE_SEL:0x0100000
 
 ata_lba_read:
     mov ebx, eax ; backup lba
