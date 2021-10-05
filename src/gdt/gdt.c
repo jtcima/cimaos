@@ -1,4 +1,5 @@
 #include "gdt.h"
+#include "kernel.h"
 
 
 void encodeGdtEntry(uint8_t* target, struct gdt_structured source)
@@ -35,3 +36,12 @@ void gdt_structured_to_gdt(struct gdt_entry* gdt, struct gdt_structured* structu
         encodeGdtEntry((uint8_t*)&gdt[i], structured_gdt[i]);
     }
 }
+
+/*
+ 29. Segment Registers in Protected Mode
+
+Segment registers are called selectors when operating in protected mode.
+
+In protected mode, segment registers simply point to data structures called segment descriptors 
+that contain the information needed to access a physical memory location. 
+*/

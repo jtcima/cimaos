@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "idt/idt.h"
 #include "io/io.h"
+#include "memory/memory.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "string/string.h"
@@ -10,6 +11,9 @@
 #include "fs/pparser.h"
 #include "disk/streamer.h"
 #include "fs/file.h"
+#include "gdt/gdt.h"
+#include "config.h"
+#include "task/tss.h"
 
 
 uint16_t* video_mem = 0; 
@@ -72,11 +76,29 @@ void panic(const char* msg)
     while(1) {}
 }
 
+struct tss tss;
+struct gdt_entry gdt_real[CIMAOS_TOTAL_GDT_SEGMENTS];
+struct gdt_structured gdt_structured[CIMAOS_TOTAL_GDT_SEGMENTS] = {
+    {.base = 0x00, .limit = 0x00, .type = 0x00},  //null segemnt
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a}, //kernel code segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x92}, //kernel data segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf8}, //user code segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf2}, //user data segment
+    {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xE9} //TSS segment
+
+};
+
+
 void kernel_main()
 {
     
     terminal_initialize();
     print("Hello World\ntest\n");
+
+    memset(gdt_real, 0x00, sizeof(gdt_real));
+    gdt_structured_to_gdt(gdt_real, gdt_structured, CIMAOS_TOTAL_GDT_SEGMENTS);
+    //load the gdt
+    gdt_load(gdt_real, sizeof(gdt_real));
 
     //initialize the heap
     kheap_init();
@@ -90,6 +112,14 @@ void kernel_main()
     //initialize idt
     idt_init();
     
+    //setup the tss
+    memset(&tss, 0x00, sizeof(tss));
+    tss.esp0 = 0x600000;
+    tss.ss0 = KERNEL_DATA_SELECTOR;
+
+    //load the tss
+    tss_load(0x28);
+
     //set up paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
 

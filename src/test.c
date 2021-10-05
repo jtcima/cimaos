@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-
+extern void tss_load(int a);
 char* func(char* dest, const char* src)
 {
     
@@ -19,16 +19,23 @@ char* func(char* dest, const char* src)
     return *res;
 }
 
-
-
-int print_func(int a, int b)
+struct test
 {
-   
-    return a+b;
-}
+    uint32_t a;
+    uint8_t b;
+};
+
+struct complete
+{
+    uint32_t c;
+};
+
 
 void print_print(int a)
 {
+    int b = 10;
+    int c = 80;
+    
     if(a)
     {
         printf("worked\n");
@@ -66,11 +73,7 @@ int main()
     func(ptr, p);
     printf("%s", p1);
  */
-    print_print(print_func(56, 78));
-    
-    char b[6];
-    
-
+    print_print(4);
     
     
 }

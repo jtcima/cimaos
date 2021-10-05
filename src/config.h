@@ -16,4 +16,6 @@
 
 #define CIMAOS_MAX_PATH 108
 
+#define CIMAOS_TOTAL_GDT_SEGMENTS 6
+
 #endif
