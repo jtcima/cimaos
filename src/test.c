@@ -74,6 +74,11 @@ int main()
     printf("%s", p1);
  */
     print_print(4);
+
+    char* s = "fdsdsds";
+    char si[] = "fsdsdsds";
+
+    printf("%s\n %s", s, si);
     
     
 }
