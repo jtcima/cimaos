@@ -19,6 +19,24 @@ struct idtr_desc //a structure point to our idt
     uint32_t base; //base address of the start of the idt
 }__attribute__((packed));
 
+struct interrupt_frame
+{
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebp;
+    uint32_t reserved;
+    uint32_t ebx;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t eax;
+    uint32_t ip;
+    uint32_t cs;
+    uint32_t flags;
+    uint32_t esp;
+    uint32_t ss;
+}__attribute__((packed));
+
+
 void idt_init();
 void enable_interrupts();
 void disable_interrupts();

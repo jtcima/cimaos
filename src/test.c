@@ -30,7 +30,22 @@ struct complete
     uint32_t c;
 };
 
+struct registers
+{
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebp;
+    uint32_t ebx;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t eax;
 
+    uint32_t ip;
+    uint32_t cs;
+    uint32_t flags;
+    uint32_t esp;
+    uint32_t ss;
+};
 void print_print(int a)
 {
     int b = 10;
@@ -73,12 +88,7 @@ int main()
     func(ptr, p);
     printf("%s", p1);
  */
-    print_print(4);
 
-    char* s = "fdsdsds";
-    char si[] = "fsdsdsds";
-
-    printf("%s\n %s", s, si);
-    
+    printf("%u", sizeof(struct registers));
     
 }
