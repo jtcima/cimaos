@@ -6,5 +6,10 @@ global _start
 
 _start:
 
-label:
-    jmp label
+    push 20
+    push 30
+    mov eax, 0 ; command 0 sum
+    int 0x80
+    add esp, 8
+    
+    jmp $

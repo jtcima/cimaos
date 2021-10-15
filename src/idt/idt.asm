@@ -8,7 +8,7 @@ global idt_load
 global no_interrupt
 global enable_interrupts
 global disable_interrupts
-golbal isr80h_wrapper
+global isr80h_wrapper
 
 enable_interrupts:
     sti
