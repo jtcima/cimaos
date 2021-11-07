@@ -35,6 +35,24 @@ void terminal_putchar(int x, int y, char c, char color)
     video_mem[(y*VGA_WIDTH) + x] = terminal_make_char(c, color);
 }
 
+void terminal_backspace()
+{
+    if (terminal_row == 0 && terminal_col == 0)
+    {
+        return;
+    }
+
+    if (terminal_col == 0)
+    {
+        terminal_row -= 1;
+        terminal_col = VGA_WIDTH;
+    }
+
+    terminal_col -= 1;
+    terminal_writechar(' ', 15);
+    terminal_col -= 1;
+}
+
 void terminal_writechar(char c, char color)
 {
     if(c == '\n')
@@ -42,6 +60,12 @@ void terminal_writechar(char c, char color)
         terminal_col = 0;
         terminal_row += 1; 
         return;      
+    }
+
+    if(c == 0x08)
+    {
+        terminal_backspace();
+        return;
     }
     terminal_putchar(terminal_col, terminal_row, c, color);
     terminal_col += 1;
@@ -99,7 +123,6 @@ struct gdt_structured gdt_structured[CIMAOS_TOTAL_GDT_SEGMENTS] = {
 
 };
 
-
 void kernel_main()
 {
     
@@ -144,11 +167,14 @@ void kernel_main()
     isr80h_register_commands();
 
     keyboard_init(); //initialize system keyboard
+
+    
+
     struct process* process = 0;
-    int res = process_load("0:/blank.bin", &process);
+    int res = process_load_switch("0:/blank.elf", &process);
     if (res != CIMAOS_ALL_OK)
     {
-        panic("failed to load blank.bin\n");
+        panic("failed to load blank.elf\n");
     }
 
     task_run_first_ever_task();

@@ -6,12 +6,20 @@ global _start
 
 _start:
 
-    push message
-    mov eax, 1 ;command print
+_loop:
+    call getkey
+    push eax
+    mov eax, 3 ;command print
     int 0x80
     add esp, 4
-       
-    jmp $
+    jmp _loop
+
+getkey:
+    mov eax, 2 ;command get key
+    int 0x80
+    cmp eax, 0x00
+    je getkey
+    ret
 
 section .data
 message: db 'Hello World', 0

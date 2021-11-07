@@ -36,15 +36,9 @@ int main()
     func(ptr, p);
     printf("%s", p1);
  */
-    int n;
-    puts("enter: ");
-    scanf("%d", &n);
-    int arra[n];
-    for(int i = 0; i < n; i++)
-    {
-        arra[i] = i;
-        printf("%d\n", arra[i]);
-    }
+    char ptr[10];
+  scanf("%s", ptr);
+  printf("%s", ptr);
     //printf("%u", sizeof(struct registers));
     
 }
