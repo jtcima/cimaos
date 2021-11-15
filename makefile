@@ -106,9 +106,11 @@ all:./bin/boot.bin ./bin/kernel.bin user_program
 	i686-elf-gcc $(INCLUDES) $(FLAGS) -I./src/string -std=gnu99 -c ./src/string/string.c -o ./build/string/string.o
 
 user_program:
+	cd ./programs/stdlib && $(MAKE) all
 	cd ./programs/blank && $(MAKE) all
 
 user_programs_clean:
+	cd ./programs/stdlib && $(MAKE) clean
 	cd ./programs/blank && $(MAKE) clean
 
 clean: user_programs_clean
