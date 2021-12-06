@@ -9,6 +9,7 @@
 #include "kernel.h"
 #include "loader/formats/elfloader.h"
 
+
 //current process is running
 struct process* current_process = 0;
 
@@ -38,6 +39,86 @@ int process_switch(struct process* process)
 {
     current_process = process;
     return 0;
+}
+
+static int process_find_free_allocation_index(struct process* process)
+{
+    int res = -ENOMEM;
+    for(int i = 0; i < CIMAOS_MAX_PROGRAMS_MEMORY_ALLOCATIONS; i++)
+    {
+        if (process->allocations[i] == 0)
+        {
+            res = i;
+            break;
+        }
+    }
+
+    return res;
+}
+
+void* process_malloc(struct process* process, size_t size)
+{
+    void* ptr = kzalloc(size);
+    if (!ptr)
+    {
+        goto out_err;
+    }
+
+    int index = process_find_free_allocation_index(process);
+    if(index < 0)
+    {
+        goto out_err;
+    }
+
+    int res = paging_map_to(process->task->page_directory, ptr,ptr, paging_align_address(ptr+size), PAGING_IS_WRITABLE|PAGING_IS_PRESENT|PAGING_ACCESS_FROM_ALL);
+    if(res < 0)
+    {
+        goto out_err;
+    }
+    process->allocations[index] = ptr;
+    return ptr;
+
+out_err:
+    if(ptr)
+    {
+        kfree(ptr);
+    }
+
+    return 0;
+}
+
+static bool process_is_process_ptr(struct process* process, void* ptr)
+{
+    for(int i = 0; i < CIMAOS_MAX_PROGRAMS_MEMORY_ALLOCATIONS; i++)
+    {
+        if (process->allocations[i] == ptr)
+            return true;
+    }
+    return false;
+}
+
+static void process_allocation_unjoin(struct process* process, void* ptr)
+{
+    for(int i = 0; i < CIMAOS_MAX_PROGRAMS_MEMORY_ALLOCATIONS; i++)
+    {
+        if(process->allocations[i] == ptr)
+        {
+            process->allocations[i] = 0x00;
+        }
+    }
+}
+
+void process_free(struct process* process, void* ptr)
+{
+    //not this process pointer? then we can't free it
+    if(!process_is_process_ptr(process, ptr))
+    {
+        return;
+    }
+    //unjoin the allocation
+    process_allocation_unjoin(process, ptr);
+
+    kfree(ptr);
 }
 
 static int process_load_binary(const char* filename, struct process* process)
@@ -132,7 +213,7 @@ static int process_map_elf(struct process* process)
         {
             flags |= PAGING_IS_WRITABLE;
         }
-        res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_filesz), flags);
+        res = paging_map_to(process->task->page_directory, paging_align_to_lower_page((void*)phdr->p_vaddr), paging_align_to_lower_page(phdr_phys_address), paging_align_address(phdr_phys_address+phdr->p_memsz), flags);
         if (ISERR(res))
         {
             break;
